@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-1 
+  namespace: default
+  labels:
+    component: zookeeper 
+    id: zookeeper-1
+spec:
+  selector:
+    component: zookeeper
+    id: zookeeper-1
+  ports:
+  - name: port0
+    port: 2181
+    protocol: TCP
+  - name: port1 
+    port: 2888 
+    protocol: TCP
+  - name: port2
+    port: 3888
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-2 
+  namespace: default
+  labels:
+    component: zookeeper 
+    id: zookeeper-2
+spec:
+  selector:
+    component: zookeeper
+    id: zookeeper-2
+  ports:
+  - name: port0
+    port: 2181
+    protocol: TCP
+  - name: port1 
+    port: 2888 
+    protocol: TCP
+  - name: port2
+    port: 3888
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-3 
+  namespace: default
+  labels:
+    component: zookeeper 
+    id: zookeeper-3
+spec:
+  selector:
+    component: zookeeper
+    id: zookeeper-3
+  ports:
+  - name: port0
+    port: 2181
+    protocol: TCP
+  - name: port1 
+    port: 2888 
+    protocol: TCP
+  - name: port2
+    port: 3888
+    protocol: TCP

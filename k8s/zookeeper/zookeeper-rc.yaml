@@ -1,0 +1,206 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: zookeeper-1
+spec:
+  replicas: 1
+  selector:
+    component: zookeeper
+    id: zookeeper-1 
+  template:
+    metadata:
+      labels:
+        component: zookeeper
+        id: zookeeper-1
+    spec:
+      containers:
+      - name: zookeeper-1 
+        image: 172.22.111.199:80/cloud/zookeeper-kubernetes:1.0
+        imagePullPolicy: Always
+        env:
+        - name: SERVER_ID
+          value: "1"
+        - name: MAX_SERVERS
+          value: "3"
+        ports:
+        - containerPort: 2181
+          name: port0
+          protocol: TCP
+        - containerPort: 2888 
+          name: port1
+          protocol: TCP
+        - containerPort: 3888
+          name: port2
+          protocol: TCP
+        volumeMounts:
+        - mountPath: "/opt/zookeeper/data"
+          name: data
+        - mountPath: "/transaction_logs"
+          name: transactionlogs
+      volumes:
+          - name: data
+            rbd:
+              monitors:
+              - "172.22.111.172:6789"
+              - "172.22.111.173:6789"
+              - "172.22.111.174:6789"
+              pool: "rbd"
+              image: "zookeeper-data-1"
+              user: "admin"
+              secretRef:
+                name: "ceph-secret"
+              keyring: "/etc/ceph/ceph.client.admin.keyring"
+              fsType: "ext4"
+              readOnly: false
+          - name: transactionlogs
+            rbd:
+              monitors:
+              - "172.22.111.172:6789"
+              - "172.22.111.173:6789"
+              - "172.22.111.174:6789"
+              pool: "rbd"
+              image: "zookeeper-transaction-1"
+              user: "admin"
+              secretRef:
+                name: "ceph-secret"
+              keyring: "/etc/ceph/ceph.client.admin.keyring"
+              fsType: "ext4"
+              readOnly: false
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: zookeeper-2
+spec:
+  replicas: 1
+  selector:
+    component: zookeeper
+    id: zookeeper-2 
+  template:
+    metadata:
+      labels:
+        component: zookeeper
+        id: zookeeper-2
+    spec:
+      containers:
+      - name: zookeeper-2 
+        image: 172.22.111.199:80/cloud/zookeeper-kubernetes:1.0
+        imagePullPolicy: Always
+        env:
+        - name: SERVER_ID
+          value: "2"
+        - name: MAX_SERVERS
+          value: "3"
+        ports:
+        - containerPort: 2181
+          name: port0
+          protocol: TCP
+        - containerPort: 2888
+          name: port1
+          protocol: TCP
+        - containerPort: 3888
+          name: port2
+          protocol: TCP
+        volumeMounts:
+        - mountPath: "/opt/zookeeper/data"
+          name: data
+        - mountPath: "/transaction_logs"
+          name: transactionlogs
+      volumes:
+          - name: data
+            rbd:
+              monitors:
+              - "172.22.111.172:6789"
+              - "172.22.111.173:6789"
+              - "172.22.111.174:6789"
+              pool: "rbd"
+              image: "zookeeper-data-2"
+              user: "admin"
+              secretRef:
+                name: "ceph-secret"
+              keyring: "/etc/ceph/ceph.client.admin.keyring"
+              fsType: "ext4"
+              readOnly: false
+          - name: transactionlogs
+            rbd:
+              monitors:
+              - "172.22.111.172:6789"
+              - "172.22.111.173:6789"
+              - "172.22.111.174:6789"
+              pool: "rbd"
+              image: "zookeeper-transaction-2"
+              user: "admin"
+              secretRef:
+                name: "ceph-secret"
+              keyring: "/etc/ceph/ceph.client.admin.keyring"
+              fsType: "ext4"
+              readOnly: false
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: zookeeper-3
+spec:
+  replicas: 1
+  selector:
+    component: zookeeper
+    id: zookeeper-3 
+  template:
+    metadata:
+      labels:
+        component: zookeeper
+        id: zookeeper-3
+    spec:
+      containers:
+      - name: zookeeper-3
+        image: 172.22.111.199:80/cloud/zookeeper-kubernetes:1.0
+        imagePullPolicy: Always
+        env:
+        - name: SERVER_ID
+          value: "3"
+        - name: MAX_SERVERS
+          value: "3"
+        ports:
+        - containerPort: 2181
+          name: port0
+          protocol: TCP
+        - containerPort: 2888
+          name: port1
+          protocol: TCP
+        - containerPort: 3888
+          name: port2
+          protocol: TCP
+        volumeMounts:
+        - mountPath: "/opt/zookeeper/data"
+          name: data
+        - mountPath: "/transaction_logs"
+          name: transactionlogs
+      volumes:
+          - name: data
+            rbd:
+              monitors:
+              - "172.22.111.172:6789"
+              - "172.22.111.173:6789"
+              - "172.22.111.174:6789"
+              pool: "rbd"
+              image: "zookeeper-data-3"
+              user: "admin"
+              secretRef:
+                name: "ceph-secret"
+              keyring: "/etc/ceph/ceph.client.admin.keyring"
+              fsType: "ext4"
+              readOnly: false
+          - name: transactionlogs
+            rbd:
+              monitors:
+              - "172.22.111.172:6789"
+              - "172.22.111.173:6789"
+              - "172.22.111.174:6789"
+              pool: "rbd"
+              image: "zookeeper-transaction-3"
+              user: "admin"
+              secretRef:
+                name: "ceph-secret"
+              keyring: "/etc/ceph/ceph.client.admin.keyring"
+              fsType: "ext4"
+              readOnly: false

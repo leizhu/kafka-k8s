@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka 
+  namespace: default
+  labels:
+    component: kafka 
+spec:
+  selector:
+    component: kafka
+  clusterIP: 10.254.0.39
+  ports:
+  - name: port0
+    port: 9092
+    protocol: TCP
+  - name: port1
+    port: 7203
+    protocol: TCP

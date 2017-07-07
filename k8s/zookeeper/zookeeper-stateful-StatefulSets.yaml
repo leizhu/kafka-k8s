@@ -1,0 +1,94 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: zoo
+spec:
+  serviceName: "zk"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: zk
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+        pod.alpha.kubernetes.io/init-containers: '[
+            {
+                "name": "install",
+                "image": "172.22.111.199:80/cloud/zookeeper-install:0.2",
+                "imagePullPolicy": "Always",
+                "args": ["--version=3.4.9", "--install-into=/opt", "--work-dir=/work-dir"],
+                "volumeMounts": [
+                    {
+                        "name": "opt",
+                        "mountPath": "/opt/"
+                    },
+                    {
+                        "name": "workdir",
+                        "mountPath": "/work-dir"
+                    }
+                ]
+            }
+        ]'
+    spec:
+      nodeSelector:
+        infra-service: "false"
+      containers:
+      - name: zk
+        image: 172.22.111.199:80/cloud/java:openjdk-8-jre
+        ports:
+        - containerPort: 2888
+          name: peer
+        - containerPort: 3888
+          name: leader-election
+        command:
+        - /work-dir/peer-finder
+        args:
+        - -on-change="/work-dir/on-change.sh"
+        - -service=zk
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+#        readinessProbe:
+#          exec:
+#            command:
+#            - sh
+#            - -c
+#            - "/opt/zookeeper/bin/zkCli.sh ls /"
+#          initialDelaySeconds: 15
+#          timeoutSeconds: 5
+        volumeMounts:
+        - name: datadir
+          mountPath: /zookeeper-datadir
+        - name: datalogdir
+          mountPath: /zookeeper-datalogdir
+        - name: opt
+          mountPath: /opt/
+        - name: workdir
+          mountPath: /work-dir
+      volumes:
+      - name: opt
+        emptyDir: {}
+      - name: workdir
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+      annotations:
+        volume.beta.kubernetes.io/storage-class: rbd-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:                                                                                                                                                           
+      name: datalogdir
+      annotations:                                                                                                                                                      
+        volume.beta.kubernetes.io/storage-class: rbd-storage                                                                                                            
+    spec:                                                                                                                                                               
+      accessModes: [ "ReadWriteOnce" ]                                                                                                                                  
+      resources:                                                                                                                                                        
+        requests:                                                                                                                                                       
+          storage: 10Gi 

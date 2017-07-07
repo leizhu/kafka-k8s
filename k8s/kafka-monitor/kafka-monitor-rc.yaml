@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kafka-monitor
+spec:
+  replicas: 1
+  selector:
+    component: kafka-monitor 
+  template:
+    metadata:
+      labels:
+        component: kafka-monitor
+    spec:
+      containers:
+      - name: kafka-monitor
+        image: 172.22.111.199:80/cloud/kafka-monitor:1.0
+        imagePullPolicy: Always
+        env:
+        - name: ZK_CONNECTION 
+          value: "zookeeper-1.default,zookeeper-2.default,zookeeper-3.default"
+        - name: REFRESH_SECONDS
+          value: "10"
+        - name: RETAIN_DAYS
+          value: "2"
+        ports:
+        - containerPort: 8080
+          name: port0
+          protocol: TCP
+        volumeMounts:
+        - mountPath: "/opt/kafka-monitor/db" 
+          name: storage
+      volumes:
+          - emptyDir:
+              medium: ""
+            name: "storage"
